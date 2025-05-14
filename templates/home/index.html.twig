@@ -6,20 +6,26 @@
     <div class="container py-4">
         <h1 class="mb-4">Partition</h1>
 
-        <div class="row gx-4"> {# gx-4 = écart horizontal entre colonnes #}
-            <div class="col-md-6">
+        <div class="row gx-4 align-items-stretch"> {# gx-4 = écart horizontal entre colonnes #}
+            <div class="col-md-6 d-flex flex-column">
                 <label for="message" class="form-label">Édition</label>
-                <textarea class="form-control" id="message" rows="25" placeholder="Écrivez ici..." style="font-family: monospace;"></textarea>
+                <textarea class="form-control flex-grow-1" id="message" rows="25" placeholder="Écrivez ici..." style="font-family: monospace;"></textarea>
             </div>
 
-            <div class="col-md-6">
+            <div class="col-md-6 d-flex flex-column">
                 <label class="form-label">Rendu</label>
-                <div id="rendered" class="form-control" style="height: 100%; font-family: monospace; white-space: pre-wrap; overflow-y: auto;"></div>
+                <div id="rendered" class="form-control flex-grow-1" style="height: 100%; font-family: monospace; white-space: pre-wrap; overflow-y: auto;"></div>
             </div>
 
         </div>
     </div>
     {% block script %}
+        <style>
+            .chord {
+                color: blue;
+                font-weight: bold;
+            }
+        </style>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
                 const input = document.getElementById('message');
