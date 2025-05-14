@@ -13,9 +13,10 @@
             </div>
 
             <div class="col-md-6">
-                <label for="rendered" class="form-label">Rendu</label>
-                <textarea class="form-control" id="rendered" rows="25" placeholder="Rendu généré ici..." readonly style="font-family: monospace;"></textarea>
+                <label class="form-label">Rendu</label>
+                <div id="rendered" class="form-control" style="height: 100%; font-family: monospace; white-space: pre-wrap; overflow-y: auto;"></div>
             </div>
+
         </div>
     </div>
     {% block script %}
@@ -66,7 +67,7 @@
 
 
                 input.addEventListener('input', () => {
-                    output.value = renderChordPro(input.value);
+                    output.innerText = renderChordPro(input.value);
                 });
             });
         </script>
