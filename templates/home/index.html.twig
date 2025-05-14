@@ -73,13 +73,10 @@
 
 
                 input.addEventListener('input', () => {
-                    output.innerText = renderChordPro(input.value);
+                    output.innerHTML = renderChordPro(input.value);
                 });
             });
         </script>
     {% endblock %}
 
 {% endblock %}
-
-
-
