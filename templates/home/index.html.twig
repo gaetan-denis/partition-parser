@@ -5,13 +5,11 @@
 {% block body %}
     <div class="container py-4">
         <h1 class="mb-4">Partition</h1>
-
-        <div class="row gx-4 align-items-stretch">
+        <div class="row gx-4 align-items-stre tch">
             <div class="col-md-6 d-flex flex-column">
                 <label for="message" class="form-label">Édition</label>
                 <textarea class="form-control flex-grow-1" id="message" rows="25" placeholder="Écrivez ici..." style="font-family: monospace;"></textarea>
             </div>
-
             <div class="col-md-6 d-flex flex-column">
                 <label class="form-label">Rendu</label>
                 <div id="rendered" class="form-control flex-grow-1" style="height: 100%; font-family: monospace; white-space: pre-wrap; overflow-y: auto;"></div>
@@ -23,6 +21,18 @@
             .chord {
                 color: blue;
                 font-weight: bold;
+            }
+            .chorus {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #f9f9ff;
+            }
+            .verse {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #ffffff;
             }
         </style>
         <script>
@@ -54,6 +64,9 @@
                                     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                                     .join(' ');
                                 htmlOutput += `<h3>${escapeHTML(capitalized)}</h3>`;
+                            } else if (directive.startsWith('artist:')) {
+                                const artist = directive.slice(7).trim();
+                                htmlOutput += `<p><strong>Artiste : ${escapeHTML(artist)}</strong></p>`;
                             } else if (directive.startsWith('subtitle:')) {
                                 const subtitle = directive.slice(9).trim();
                                 htmlOutput += `<h4><em>${escapeHTML(subtitle)}</em></h4>`;
@@ -63,6 +76,19 @@
                             } else if (directive.startsWith('key:')) {
                                 const key = directive.slice(4).trim();
                                 htmlOutput += `<p><strong>Tonalité : ${escapeHTML(key)}</strong></p>`;
+                            } else if (directive.startsWith('comment:')) {
+                                const comment = directive.slice(8).trim();
+                                htmlOutput += `<p><em class="text-muted">// ${escapeHTML(comment)}</em></p>`;
+                            }  else if (directive === 'start_of_chorus') {
+                                inChorus = true;
+                                htmlOutput += `<div class="chorus mt-2 p-2 border-start border-4 border-primary bg-light"><strong>Refrain :</strong><br>`;
+                            } else if (directive === 'end_of_chorus') {
+                                inChorus = false;
+                                htmlOutput += `</div>`;
+                            } else if (directive === 'start_of_verse') {
+                                htmlOutput += `<div class="verse mt-2 p-2 border-start border-4 border-secondary bg-white"><strong>Couplet :</strong><br>`;
+                            } else if (directive === 'end_of_verse') {
+                                htmlOutput += `</div>`;
                             }
 
 
