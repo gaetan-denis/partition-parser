@@ -16,7 +16,6 @@
                 <label class="form-label">Rendu</label>
                 <div id="rendered" class="form-control flex-grow-1" style="height: 100%; font-family: monospace; white-space: pre-wrap; overflow-y: auto;"></div>
             </div>
-
         </div>
     </div>
     {% block script %}
@@ -33,7 +32,30 @@
 
                 function renderChordPro(text) {
                     const lines = text.split('\n');
+                    let inChorus = false;
+
                     const renderedLines = lines.map(line => {
+                        const trimmed = line.trim();
+
+                        // Gestion des directives simples
+                        if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
+                            const directive = trimmed.slice(1, -1).trim();
+
+                            if (directive.startsWith('title:')) {
+                                return directive.slice(6).trim().toUpperCase(); // TITRE EN MAJUSCULE
+                            } else if (directive.startsWith('subtitle:')) {
+                                return directive.slice(9).trim(); // Sous-titre
+                            } else if (directive === 'start_of_chorus') {
+                                inChorus = true;
+                                return '[Refrain]';
+                            } else if (directive === 'end_of_chorus') {
+                                inChorus = false;
+                                return '';
+                            } else {
+                                return ''; // Ignorer les autres directives
+                            }
+                        }
+
                         let chordLine = '';
                         let lyricLine = '';
                         let i = 0;
@@ -43,9 +65,7 @@
                                 const end = line.indexOf(']', i);
                                 if (end !== -1) {
                                     const chord = line.slice(i + 1, end);
-                                    // L'accord doit se placer au-dessus du caractère suivant
                                     const chordPos = lyricLine.length;
-                                    // Ajouter des espaces jusqu'à la bonne position
                                     while (chordLine.length < chordPos) {
                                         chordLine += ' ';
                                     }
@@ -57,7 +77,6 @@
                                 }
                             } else {
                                 lyricLine += line[i];
-                                // Ajouter un espace pour l'accord s'il y en a un
                                 if (chordLine.length < lyricLine.length) {
                                     chordLine += ' ';
                                 }
@@ -65,18 +84,17 @@
                             }
                         }
 
-                        return chordLine + '\n' + lyricLine;
+                        const combined = chordLine + '\n' + lyricLine;
+                        return inChorus ? combined + '\n' + '(Refrain)' : combined;
                     });
 
                     return renderedLines.join('\n\n');
                 }
 
-
                 input.addEventListener('input', () => {
-                    output.innerHTML = renderChordPro(input.value);
+                    output.innerText = renderChordPro(input.value);
                 });
             });
         </script>
     {% endblock %}
-
 {% endblock %}
