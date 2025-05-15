@@ -6,7 +6,7 @@
     <div class="container py-4">
         <h1 class="mb-4">Partition</h1>
 
-        <div class="row gx-4 align-items-stretch"> {# gx-4 = écart horizontal entre colonnes #}
+        <div class="row gx-4 align-items-stretch">
             <div class="col-md-6 d-flex flex-column">
                 <label for="message" class="form-label">Édition</label>
                 <textarea class="form-control flex-grow-1" id="message" rows="25" placeholder="Écrivez ici..." style="font-family: monospace;"></textarea>
@@ -30,36 +30,47 @@
                 const input = document.getElementById('message');
                 const output = document.getElementById('rendered');
 
+                function escapeHTML(str) {
+                    return str
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;');
+                }
+
                 function renderChordPro(text) {
                     const lines = text.split('\n');
                     let inChorus = false;
+                    let htmlOutput = '';
 
-                    const renderedLines = lines.map(line => {
+                    lines.forEach(line => {
                         const trimmed = line.trim();
 
-                        // Gestion des directives simples
                         if (trimmed.startsWith('{') && trimmed.endsWith('}')) {
                             const directive = trimmed.slice(1, -1).trim();
 
                             if (directive.startsWith('title:')) {
                                 const title = directive.slice(6).trim();
-                                return title.split(' ')
+                                const capitalized = title.split(' ')
                                     .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
                                     .join(' ');
+                                htmlOutput += `<h3>${escapeHTML(capitalized)}</h3>`;
                             } else if (directive.startsWith('subtitle:')) {
-                                return directive.slice(9).trim(); // Sous-titre
-                            } else if (directive === 'start_of_chorus') {
-                                inChorus = true;
-                                return 'Refrain';
-                            } else if (directive === 'end_of_chorus') {
-                                inChorus = false;
-                                return '';
-                            } else {
-                                return ''; // Ignorer les autres directives
+                                const subtitle = directive.slice(9).trim();
+                                htmlOutput += `<h4><em>${escapeHTML(subtitle)}</em></h4>`;
+                            } else if (directive.startsWith('capo:')) {
+                                const capo = directive.slice(5).trim();
+                                htmlOutput += `<p><strong>Capo : ${escapeHTML(capo)}</strong></p>`;
+                            } else if (directive.startsWith('key:')) {
+                                const key = directive.slice(4).trim();
+                                htmlOutput += `<p><strong>Tonalité : ${escapeHTML(key)}</strong></p>`;
                             }
+
+
+                            // autres directives ignorées
+                            return;
                         }
 
-
+                        // Traitement des lignes avec accords
                         let chordLine = '';
                         let lyricLine = '';
                         let i = 0;
@@ -88,15 +99,14 @@
                             }
                         }
 
-                        const combined = chordLine + '\n' + lyricLine;
-                        return combined;
+                        htmlOutput += `<pre>${escapeHTML(chordLine)}\n${escapeHTML(lyricLine)}</pre>`;
                     });
 
-                    return renderedLines.join('\n\n');
+                    return htmlOutput;
                 }
 
                 input.addEventListener('input', () => {
-                    output.innerText = renderChordPro(input.value);
+                    output.innerHTML = renderChordPro(input.value);
                 });
             });
         </script>
