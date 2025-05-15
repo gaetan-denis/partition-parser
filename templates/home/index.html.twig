@@ -42,12 +42,15 @@
                             const directive = trimmed.slice(1, -1).trim();
 
                             if (directive.startsWith('title:')) {
-                                return directive.slice(6).trim().toUpperCase(); // TITRE EN MAJUSCULE
+                                const title = directive.slice(6).trim();
+                                return title.split(' ')
+                                    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+                                    .join(' ');
                             } else if (directive.startsWith('subtitle:')) {
                                 return directive.slice(9).trim(); // Sous-titre
                             } else if (directive === 'start_of_chorus') {
                                 inChorus = true;
-                                return '[Refrain]';
+                                return 'Refrain';
                             } else if (directive === 'end_of_chorus') {
                                 inChorus = false;
                                 return '';
@@ -55,6 +58,7 @@
                                 return ''; // Ignorer les autres directives
                             }
                         }
+
 
                         let chordLine = '';
                         let lyricLine = '';
@@ -85,7 +89,7 @@
                         }
 
                         const combined = chordLine + '\n' + lyricLine;
-                        return inChorus ? combined + '\n' + '(Refrain)' : combined;
+                        return combined;
                     });
 
                     return renderedLines.join('\n\n');
