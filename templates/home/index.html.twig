@@ -7,8 +7,13 @@
         <h1 class="mb-4">Partition</h1>
         <div class="row gx-4 align-items-stre tch">
             <div class="col-md-6 d-flex flex-column">
+                <label for="fileInput" class="form-label">Charger un fichier ChordPro</label>
+                <input type="file" id="fileInput" accept=".txt,.chordpro" class="form-control mb-2">
                 <label for="message" class="form-label">Édition</label>
                 <textarea class="form-control flex-grow-1" id="message" rows="25" placeholder="Écrivez ici..." style="font-family: monospace;"></textarea>
+                <label for="filenameInput" class="form-label mt-2">Nom du fichier</label>
+                <input type="text" id="filenameInput" class="form-control mb-2" placeholder="partition.chordpro">
+                <button id="downloadBtn" class="btn btn-primary mt-2" type="button">Télécharger</button>
             </div>
             <div class="col-md-6 d-flex flex-column">
                 <label class="form-label">Rendu</label>
@@ -37,7 +42,52 @@
         </style>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
+                const filenameInput = document.getElementById('filenameInput');
                 const input = document.getElementById('message');
+                const fileInput = document.getElementById('fileInput');
+
+                const downloadBtn = document.getElementById('downloadBtn');
+
+                downloadBtn.addEventListener('click', () => {
+                    const content = input.value;
+                    let filename = filenameInput.value.trim();
+
+                    if (!filename) {
+                        filename = 'partition';
+                    }
+
+                    // Ajoute l'extension si elle est manquante
+                    if (!filename.endsWith('.chordpro') && !filename.endsWith('.txt')) {
+                        filename += '.chordpro';
+                    }
+
+                    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+                    const url = URL.createObjectURL(blob);
+
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = filename;
+                    document.body.appendChild(link);
+                    link.click();
+
+                    // Nettoyage
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                });
+
+
+
+                fileInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            input.value = e.target.result;
+                            input.dispatchEvent(new Event('input')); // déclenche le rendu
+                        };
+                        reader.readAsText(file);
+                    }
+                });
                 const output = document.getElementById('rendered');
 
                 function escapeHTML(str) {
