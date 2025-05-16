@@ -39,6 +39,32 @@
                 padding-left: 1rem;
                 background-color: #ffffff;
             }
+            .bridge {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #fffbe6;
+            }
+            .intro {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #e6f7ff;
+            }
+
+            .outro {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #f2f2f2;
+            }
+
+            .interlude {
+                margin-top: 1rem;
+                margin-bottom: 1rem;
+                padding-left: 1rem;
+                background-color: #eaffea;
+            }
         </style>
         <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -128,16 +154,51 @@
                                 htmlOutput += `<p><strong>Tonalité : ${escapeHTML(key)}</strong></p>`;
                             } else if (directive.startsWith('comment:')) {
                                 const comment = directive.slice(8).trim();
-                                htmlOutput += `<p><em class="text-muted">// ${escapeHTML(comment)}</em></p>`;
-                            }  else if (directive === 'start_of_chorus') {
+                                htmlOutput += `<p class="text-muted">${escapeHTML(comment)}</p>`;
+                            } else if (directive.startsWith('comment_italic:')) {
+                                const comment = directive.slice(15).trim();
+                                htmlOutput += `<p><em class="text-muted">${escapeHTML(comment)}</em></p>`;
+                            }
+                            else if (directive.startsWith('start_of_chorus')) {
                                 inChorus = true;
-                                htmlOutput += `<div class="chorus mt-2 p-2 border-start border-4 border-primary bg-light"><strong>Refrain :</strong><br>`;
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Refrain';
+                                htmlOutput += `<div class="chorus mt-2 p-2 border-start border-4 border-primary bg-light"><strong>${escapeHTML(label)} :</strong><br>`;
                             } else if (directive === 'end_of_chorus') {
                                 inChorus = false;
                                 htmlOutput += `</div>`;
-                            } else if (directive === 'start_of_verse') {
-                                htmlOutput += `<div class="verse mt-2 p-2 border-start border-4 border-secondary bg-white"><strong>Couplet :</strong><br>`;
+                            } else if (directive.startsWith('start_of_verse')) {
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Couplet';
+                                htmlOutput += `<div class="verse mt-2 p-2 border-start border-4 border-secondary bg-white"><strong>${escapeHTML(label)} :</strong><br>`;
                             } else if (directive === 'end_of_verse') {
+                                htmlOutput += `</div>`;
+                            } else if (directive.startsWith('year:')) {
+                                const year = directive.slice(5).trim();
+                                htmlOutput += `<p><strong>Année : ${escapeHTML(year)}</strong></p>`;
+                            }else if (directive.startsWith('start_of_bridge')) {
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Pont';
+                                htmlOutput += `<div class="bridge mt-2 p-2 border-start border-4 border-warning bg-light"><strong>${escapeHTML(label)} :</strong><br>`;
+                            } else if (directive === 'end_of_bridge') {
+                                htmlOutput += `</div>`;
+                            } else if (directive.startsWith('start_of_intro')) {
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Intro';
+                                htmlOutput += `<div class="intro mt-2 p-2 border-start border-4 border-info bg-light"><strong>${escapeHTML(label)} :</strong><br>`;
+                            } else if (directive === 'end_of_intro') {
+                                htmlOutput += `</div>`;
+                            } else if (directive.startsWith('start_of_outro')) {
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Outro';
+                                htmlOutput += `<div class="outro mt-2 p-2 border-start border-4 border-dark bg-light"><strong>${escapeHTML(label)} :</strong><br>`;
+                            } else if (directive === 'end_of_outro') {
+                                htmlOutput += `</div>`;
+                            } else if (directive.startsWith('start_of_interlude')) {
+                                const parts = directive.split(':');
+                                const label = parts[1] ? parts[1].trim() : 'Interlude';
+                                htmlOutput += `<div class="interlude mt-2 p-2 border-start border-4 border-success bg-light"><strong>${escapeHTML(label)} :</strong><br>`;
+                            } else if (directive === 'end_of_interlude') {
                                 htmlOutput += `</div>`;
                             }
 
